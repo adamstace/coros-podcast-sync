@@ -35,29 +35,45 @@ class TaskScheduler:
     def add_interval_job(
         self,
         func,
-        minutes: int,
         job_id: str,
-        description: str = ""
+        description: str = "",
+        minutes: int = None,
+        hours: int = None,
+        days: int = None
     ):
         """
         Add a job that runs at fixed intervals.
 
         Args:
             func: Async function to execute
-            minutes: Interval in minutes
             job_id: Unique job identifier
             description: Human-readable description
+            minutes: Interval in minutes (optional)
+            hours: Interval in hours (optional)
+            days: Interval in days (optional)
         """
         try:
+            # Build trigger kwargs
+            trigger_kwargs = {}
+            if minutes is not None:
+                trigger_kwargs['minutes'] = minutes
+            if hours is not None:
+                trigger_kwargs['hours'] = hours
+            if days is not None:
+                trigger_kwargs['days'] = days
+
+            if not trigger_kwargs:
+                raise ValueError("At least one interval (minutes, hours, or days) must be specified")
+
             self.scheduler.add_job(
                 func,
-                trigger=IntervalTrigger(minutes=minutes),
+                trigger=IntervalTrigger(**trigger_kwargs),
                 id=job_id,
                 name=description,
                 replace_existing=True,
                 max_instances=1  # Prevent overlapping executions
             )
-            logger.info(f"Added scheduled job: {description} (every {minutes} minutes)")
+            logger.info(f"Added scheduled job: {description}")
         except Exception as e:
             logger.error(f"Error adding scheduled job {job_id}: {e}")
 
