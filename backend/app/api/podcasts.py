@@ -71,9 +71,6 @@ async def create_podcast(
     try:
         podcast = await service.create_podcast(podcast_create)
 
-        # Get episode count
-        episode_count = service.db.query(service.db.query(service.db.query).filter).scalar() or 0
-
         podcast_dict = {
             'id': podcast.id,
             'title': podcast.title,
