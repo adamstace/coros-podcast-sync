@@ -6,17 +6,21 @@ import { Link } from 'react-router-dom'
 import './Dashboard.css'
 
 export default function Dashboard() {
-  const { data: podcasts } = usePodcasts()
-  const { data: episodes } = useEpisodes()
+  const { data: podcastsData } = usePodcasts()
+  const { data: episodesData } = useEpisodes()
   const { data: syncStatus } = useSyncStatus()
   const { data: watchDetect } = useDetectWatch()
   const { data: localStorage } = useLocalStorage()
 
+  // Extract data
+  const podcasts = podcastsData?.podcasts || []
+  const episodes = episodesData?.episodes || []
+
   // Calculate stats
-  const totalPodcasts = podcasts?.length || 0
-  const totalEpisodes = episodes?.length || 0
-  const downloadedEpisodes = episodes?.filter((e) => e.download_status === 'downloaded').length || 0
-  const pendingDownloads = episodes?.filter((e) => e.download_status === 'pending').length || 0
+  const totalPodcasts = podcasts.length
+  const totalEpisodes = episodes.length
+  const downloadedEpisodes = episodes.filter((e) => e.download_status === 'downloaded').length
+  const pendingDownloads = episodes.filter((e) => e.download_status === 'pending').length
   const syncedEpisodes = syncStatus?.synced_episodes || 0
   const watchConnected = watchDetect?.connected || false
   const storageUsedMb = localStorage?.total_podcast_mb || 0
