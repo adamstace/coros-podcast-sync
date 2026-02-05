@@ -3,7 +3,7 @@
 import logging
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from sqlalchemy import desc
 
 from ..database import get_db, Episode, Podcast
@@ -33,7 +33,7 @@ async def list_episodes(
 ):
     """List episodes with optional filters."""
     try:
-        query = db.query(Episode)
+        query = db.query(Episode).options(joinedload(Episode.podcast))
 
         # Apply filters
         if podcast_id:
@@ -52,6 +52,7 @@ async def list_episodes(
             EpisodeResponse(
                 id=ep.id,
                 podcast_id=ep.podcast_id,
+                podcast_image_url=ep.podcast.image_url if ep.podcast else None,
                 title=ep.title,
                 description=ep.description,
                 audio_url=ep.audio_url,
@@ -91,7 +92,12 @@ async def get_episode(
 ):
     """Get episode by ID."""
     try:
-        episode = db.query(Episode).filter(Episode.id == episode_id).first()
+        episode = (
+            db.query(Episode)
+            .options(joinedload(Episode.podcast))
+            .filter(Episode.id == episode_id)
+            .first()
+        )
 
         if not episode:
             raise HTTPException(
@@ -102,6 +108,7 @@ async def get_episode(
         return EpisodeResponse(
             id=episode.id,
             podcast_id=episode.podcast_id,
+            podcast_image_url=episode.podcast.image_url if episode.podcast else None,
             title=episode.title,
             description=episode.description,
             audio_url=episode.audio_url,

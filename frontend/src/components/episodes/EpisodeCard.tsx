@@ -1,5 +1,6 @@
 import { Episode } from '../../types/episode'
 import { useDownloadEpisode, useCancelDownload, useDeleteEpisode, useConvertEpisode } from '../../hooks/useEpisodes'
+import podcastPlaceholder from '../../assets/podcast-placeholder.svg'
 import './EpisodeCard.css'
 
 interface EpisodeCardProps {
@@ -63,12 +64,25 @@ export default function EpisodeCard({ episode }: EpisodeCardProps) {
   return (
     <div className="episode-card">
       <div className="episode-header">
-        <h3 className="episode-title">{episode.title}</h3>
+        <div className="episode-header-main">
+          <img
+            src={episode.podcast_image_url || podcastPlaceholder}
+            alt={`${episode.title} podcast artwork`}
+            className="episode-podcast-image"
+            onError={(event) => {
+              event.currentTarget.src = podcastPlaceholder
+            }}
+          />
+          <h3 className="episode-title">{episode.title}</h3>
+        </div>
         {getStatusBadge()}
       </div>
 
       {episode.description && (
-        <p className="episode-description">{episode.description}</p>
+        <div
+          className="episode-description"
+          dangerouslySetInnerHTML={{ __html: episode.description }}
+        />
       )}
 
       <div className="episode-meta">

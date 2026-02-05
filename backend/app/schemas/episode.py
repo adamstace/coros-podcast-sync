@@ -28,6 +28,7 @@ class EpisodeResponse(EpisodeBase):
 
     id: int
     podcast_id: int
+    podcast_image_url: Optional[str] = None
     guid: str
     download_status: str
     download_progress: int
