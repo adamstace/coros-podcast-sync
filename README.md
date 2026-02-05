@@ -38,7 +38,8 @@ Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add to PATH.
 ### 1. Clone and Setup
 
 ```bash
-cd /Users/adams/repos/coros-podcast-sync
+git clone https://github.com/adamstace/coros-podcast-sync.git
+cd coros-podcast-sync/
 ```
 
 ### 2. Backend Setup
